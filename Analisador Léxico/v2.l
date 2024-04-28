@@ -242,12 +242,22 @@ fimenquanto {
 }
 
 [[:space:]]+ {
-    // Ignorar espaços em branco
+    // Armazenar o ponto e vírgula na tabela de símbolos
+    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
+    tabela_simbolos[num_simbolos].tipo = "VAZIO";
+    num_simbolos++;
+    printf("VAZIO\n");
 }
 
+
 \{({L}|{D}|{S}|{SPACE}|{TAB})*\}  {
-    // Ignorar comentários
+    // Armazenar o ponto e vírgula na tabela de símbolos
+    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
+    tabela_simbolos[num_simbolos].tipo = "COMENTARIO";
+    num_simbolos++;
+    printf("COMENTARIO\n");
 }
+
 
 <<EOF>> {
     /*printf("FIM_DE_ARQ\n");*/
