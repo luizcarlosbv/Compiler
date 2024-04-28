@@ -1,5 +1,5 @@
-Lexema,Tipo
-asdasd,IDENTIFICADOR
-123,NUMERO
+Lexema,token
+asd,IDENTIFICADOR
+cd_b3,IDENTIFICADOR
 enquanto,ENQUANTO
 se,SE

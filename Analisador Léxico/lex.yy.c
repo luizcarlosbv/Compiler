@@ -546,43 +546,96 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "v2.l"
-#line 2 "v2.l"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#line 555 "lex.yy.c"
-#line 10 "v2.l"
-// Definição de uma estrutura para um símbolo
-typedef struct {
-    char *lexema;
-    char *tipo;
-} Simbolo;
+#line 1 "v3.l"
+#line 2 "v3.l"
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
 
-// Definição de uma tabela de símbolos
-Simbolo tabela_simbolos[1000]; // Suponha que sua tabela de símbolos pode conter até 1000 símbolos
-int num_simbolos = 0; // Número atual de símbolos na tabela
 
-// Função para exportar a tabela de símbolos para um arquivo
-void exportar_tabela(const char *nome_arquivo) {
-    FILE *arquivo = fopen(nome_arquivo, "w");
-    if (arquivo == NULL) {
-        fprintf(stderr, "Erro ao abrir o arquivo para escrita.\n");
-        exit(EXIT_FAILURE);
-    }
+#line 557 "lex.yy.c"
+#line 13 "v3.l"
+    // Definição de uma estrutura para um símbolo
+    typedef struct Simbolo {
+        char *lexema;
+        char *token;
+        struct Simbolo *prox;
+    } Simbolo;
 
-    // Escrever cabeçalho
-    fprintf(arquivo, "Lexema,Tipo\n");
+    // Definição de uma tabela de lexemas
+    struct Simbolo tabela_lexema[1000]; // Suponha que sua tabela de símbolos pode conter até 1000 símbolos
+    int num_simbolos = 0; // Número atual de símbolos na tabela
+    
+    // Iniciando tabela de simbolos
+    struct Simbolo *inicio_tabela = NULL;
 
-    // Escrever cada entrada da tabela de símbolos no arquivo
-    for (int i = 0; i < num_simbolos; i++) {
-        fprintf(arquivo, "%s,%s\n", tabela_simbolos[i].lexema, tabela_simbolos[i].tipo);
-    }
+	void inserir_simbolo(const char *lexema, const char *token) {
+		// Aloca memória para o novo símbolo
+		struct Simbolo *novo_simbolo = (Simbolo *)malloc(sizeof(Simbolo));
+		if (novo_simbolo == NULL) {
+			fprintf(stderr, "Erro ao alocar memória para o novo símbolo.\n");
+			exit(EXIT_FAILURE);
+		}
 
-    fclose(arquivo);
-}
-#line 585 "lex.yy.c"
-#line 586 "lex.yy.c"
+		// Copia o lexema e o token para o novo símbolo
+		novo_simbolo->lexema = strdup(lexema);
+		novo_simbolo->token = strdup(token);
+		novo_simbolo->prox = NULL;
+
+		// Insere o novo símbolo no final da lista
+		if (inicio_tabela == NULL) {
+			inicio_tabela = novo_simbolo;
+		} else {
+			struct Simbolo *atual = inicio_tabela;
+			while (atual->prox != NULL) {
+				atual = atual->prox;
+			}
+			atual->prox = novo_simbolo;
+		}
+	}
+
+
+	void exportar_tabela(const char *nome_arquivo) {
+		FILE *arquivo = fopen(nome_arquivo, "w");
+		if (arquivo == NULL) {
+			fprintf(stderr, "Erro ao abrir o arquivo para escrita.\n");
+			exit(EXIT_FAILURE);
+		}
+
+		// Escrever cabeçalho
+		fprintf(arquivo, "Lexema,token\n");
+
+		// Escrever cada entrada da tabela de símbolos no arquivo
+		Simbolo *atual = inicio_tabela;
+		while (atual != NULL) {
+			fprintf(arquivo, "%s,%s\n", atual->lexema, atual->token);
+			atual = atual->prox;
+		}
+
+		fclose(arquivo);
+	}
+	
+	void temp_exportar(const char *nome_arquivo) {
+		FILE *arquivo = fopen(nome_arquivo, "w");
+		if (arquivo == NULL) {
+			fprintf(stderr, "Erro ao abrir o arquivo para escrita.\n");
+			exit(EXIT_FAILURE);
+		}
+
+		// Escrever cabeçalho
+		fprintf(arquivo, "Lexema,token\n");
+
+		// Escrever cada entrada da tabela de símbolos no arquivo
+		for (int i = 0; i < num_simbolos; i++) {
+			fprintf(arquivo, "%s,%s\n", tabela_lexema[i].lexema, tabela_lexema[i].token);
+		}
+
+		fclose(arquivo);
+	}
+
+
+#line 638 "lex.yy.c"
+#line 639 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -799,11 +852,11 @@ YY_DECL
 		}
 
 	{
-#line 48 "v2.l"
+#line 102 "v3.l"
 
 
 
-#line 807 "lex.yy.c"
+#line 860 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -862,171 +915,189 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 51 "v2.l"
+#line 105 "v3.l"
 {
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "INICIOPROG";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "INICIOPROG";
     num_simbolos++;
+	inserir_simbolo(yytext, "INICIOPROG");
     printf("INICIOPROG\n");
 }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 58 "v2.l"
+#line 113 "v3.l"
 {
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "FIMPROG";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "FIMPROG";
     num_simbolos++;
+	inserir_simbolo(yytext, "FIMPROG");
     printf("FIMPROG\n");
 }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 65 "v2.l"
+#line 121 "v3.l"
 {
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "INICIOARGS";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "INICIOARGS";
     num_simbolos++;
+	inserir_simbolo(yytext, "INICIOARGS");
     printf("INICIOARGS\n");
 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 72 "v2.l"
+#line 129 "v3.l"
 {
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "FIMARGS";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "FIMARGS";
     num_simbolos++;
+	inserir_simbolo(yytext, "FIMARGS");
     printf("FIMARGS\n");
 }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 79 "v2.l"
+#line 137 "v3.l"
 {
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "INICIOVARS";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "INICIOVARS";
     num_simbolos++;
+	inserir_simbolo(yytext, "INICIOVARS");
     printf("INICIOVARS\n");
 }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 86 "v2.l"
+#line 145 "v3.l"
 {
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "FIMVARS";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "FIMVARS";
     num_simbolos++;
+	inserir_simbolo(yytext, "FIMVARS");
     printf("FIMVARS\n");
 }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 93 "v2.l"
+#line 153 "v3.l"
 {
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "ESCREVA";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "ESCREVA";
     num_simbolos++;
+	inserir_simbolo(yytext, "ESCREVA");
     printf("ESCREVA\n");
 }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 100 "v2.l"
+#line 161 "v3.l"
 {
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "INTEIRO";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "INTEIRO";
     num_simbolos++;
+	inserir_simbolo(yytext, "INTEIRO");
     printf("INTEIRO\n");
 }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 107 "v2.l"
+#line 169 "v3.l"
 {
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "REAL";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "REAL";
     num_simbolos++;
+	inserir_simbolo(yytext, "REAL");
     printf("REAL\n");
 }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 114 "v2.l"
+#line 177 "v3.l"
 {
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "LITERAL";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "LITERAL";
     num_simbolos++;
+	inserir_simbolo(yytext, "LITERAL");
     printf("LITERAL\n");
 }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 121 "v2.l"
+#line 185 "v3.l"
 {
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "SE";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "SE";
     num_simbolos++;
+	inserir_simbolo(yytext, "SE");
     printf("SE\n");
 }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 128 "v2.l"
+#line 193 "v3.l"
 {
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "ENTAO";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "ENTAO";
     num_simbolos++;
+	inserir_simbolo(yytext, "ENTAO");
     printf("ENTAO\n");
 }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 135 "v2.l"
+#line 201 "v3.l"
 {
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "FIMSE";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "FIMSE";
     num_simbolos++;
+	inserir_simbolo(yytext, "FIMSE");
     printf("FIMSE\n");
 }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 142 "v2.l"
+#line 209 "v3.l"
 {
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "ENQUANTO";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "ENQUANTO";
     num_simbolos++;
+	inserir_simbolo(yytext, "ENQUANTO");
     printf("ENQUANTO\n");
 }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 149 "v2.l"
+#line 217 "v3.l"
 {
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "FACA";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "FACA";
     num_simbolos++;
+	inserir_simbolo(yytext, "FACA");
     printf("FACA\n");
 }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 156 "v2.l"
+#line 225 "v3.l"
 {
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "FIMENQUANTO";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "FIMENQUANTO";
     num_simbolos++;
+	inserir_simbolo(yytext, "FIMENQUANTO");
     printf("FIMENQUANTO\n");
 }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 164 "v2.l"
+#line 234 "v3.l"
 {
     // Armazenar o número na tabela de símbolos
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "NUMERO";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "NUMERO";
+	
+	
     num_simbolos++;
     printf("NUMERO\n");
 }
@@ -1034,99 +1105,100 @@ YY_RULE_SETUP
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-#line 172 "v2.l"
+#line 244 "v3.l"
 {
     // Armazenar o literal na tabela de símbolos
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "LITERAL";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "LITERAL";
     num_simbolos++;
     printf("LITERAL\n");
 }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 180 "v2.l"
+#line 252 "v3.l"
 {
     // Armazenar o identificador na tabela de símbolos
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "IDENTIFICADOR";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "IDENTIFICADOR";
+	inserir_simbolo(yytext, "IDENTIFICADOR");
     num_simbolos++;
     printf("IDENTIFICADOR\n");
 }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 188 "v2.l"
+#line 261 "v3.l"
 {
     // Armazenar o operador relacional na tabela de símbolos
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "OP_RELACIONAL";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "OP_RELACIONAL";
     num_simbolos++;
     printf("OP_RELACIONAL\n");
 }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 196 "v2.l"
+#line 269 "v3.l"
 {
     // Armazenar o operador aritmético na tabela de símbolos
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "OP_ARITMETICO";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "OP_ARITMETICO";
     num_simbolos++;
     printf("OP_ARITMETICO\n");
 }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 204 "v2.l"
+#line 277 "v3.l"
 {
     // Armazenar o operador de atribuição na tabela de símbolos
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "ATRIBUICAO";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "ATRIBUICAO";
     num_simbolos++;
     printf("ATRIBUICAO\n");
 }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 212 "v2.l"
+#line 285 "v3.l"
 {
     // Armazenar o abre parêntese na tabela de símbolos
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "ABRE_PAR";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "ABRE_PAR";
     num_simbolos++;
     printf("ABRE_PAR\n");
 }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 220 "v2.l"
+#line 293 "v3.l"
 {
     // Armazenar o fecha parêntese na tabela de símbolos
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "FECHA_PAR";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "FECHA_PAR";
     num_simbolos++;
     printf("FECHA_PAR\n");
 }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 228 "v2.l"
+#line 301 "v3.l"
 {
     // Armazenar a vírgula na tabela de símbolos
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "VIRGULA";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "VIRGULA";
     num_simbolos++;
     printf("VIRGULA\n");
 }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 236 "v2.l"
+#line 309 "v3.l"
 {
     // Armazenar o ponto e vírgula na tabela de símbolos
-    tabela_simbolos[num_simbolos].lexema = strdup(yytext);
-    tabela_simbolos[num_simbolos].tipo = "PONTO_E_VIRG";
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "PONTO_E_VIRG";
     num_simbolos++;
     printf("PONTO_E_VIRG\n");
 }
@@ -1134,40 +1206,50 @@ YY_RULE_SETUP
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-#line 244 "v2.l"
+#line 317 "v3.l"
 {
-    // Ignorar espaços em branco
+    // Armazenar o ponto e vírgula na tabela de símbolos
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "VAZIO";
+    num_simbolos++;
+    printf("VAZIO\n");
 }
 	YY_BREAK
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
-#line 248 "v2.l"
+#line 326 "v3.l"
 {
-    // Ignorar comentários
+    // Armazenar o ponto e vírgula na tabela de símbolos
+    tabela_lexema[num_simbolos].lexema = strdup(yytext);
+    tabela_lexema[num_simbolos].token = "COMENTARIO";
+    num_simbolos++;
+    printf("COMENTARIO\n");
 }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 252 "v2.l"
+#line 335 "v3.l"
 {
-    /*printf("FIM_DE_ARQ\n");*/
+    printf("FIM_DE_ARQ\n");
     // Exportar a tabela de símbolos para um arquivo
+	temp_exportar("tabela_lexema.csv");
     exportar_tabela("tabela_simbolos.csv");
+	exit(0);
 }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 258 "v2.l"
+#line 343 "v3.l"
 {
     printf("ERRO\n");
 }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 262 "v2.l"
+#line 347 "v3.l"
 ECHO;
 	YY_BREAK
-#line 1171 "lex.yy.c"
+#line 1253 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2170,7 +2252,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 262 "v2.l"
+#line 347 "v3.l"
 
 
 int main() {
@@ -2178,7 +2260,7 @@ int main() {
     yylex();
 
     // Após a conclusão da análise léxica, exporte a tabela de símbolos
-    exportar_tabela("tabela_simbolos.csv");
+    //exportar_tabela("tabela_lexema.csv");
 
     return 0;
 }

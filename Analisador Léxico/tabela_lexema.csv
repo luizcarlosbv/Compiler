@@ -1,0 +1,14 @@
+Lexema,token
+asd,IDENTIFICADOR
+ ,VAZIO
+123,NUMERO
+ ,VAZIO
+{asdsd},COMENTARIO
+ ,VAZIO
+cd_b3,IDENTIFICADOR
+ ,VAZIO
+enquanto,ENQUANTO
+ ,VAZIO
+se,SE
+
+,VAZIO
