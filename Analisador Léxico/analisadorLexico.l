@@ -2,14 +2,15 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
-
-
 %}
 
 
 %option noyywrap
 
 %{		
+    // Definição de ponteiro para arquivo de entrada
+    FILE *arquivo_entrada;
+
     // Definição de uma estrutura para um símbolo
     typedef struct Simbolo {
         char *lexema;
@@ -23,6 +24,30 @@
     
     // Iniciando tabela de simbolos
     struct Simbolo *inicio_tabela = NULL;
+
+
+    Simbolo *buscarSimbolo(const char *lexema){
+        if(inicio_tabela == NULL){
+            return NULL;
+        }
+        else{
+            struct Simbolo *atual = inicio_tabela;
+            int resultado_comparacao;
+
+            while(atual != NULL){
+
+            resultado_comparacao = strcmp(atual->lexema, lexema);
+            //printf("\n\n%s,%s\n\n", atual->lexema, lexema);  //linha de teste da comparação
+
+            if(resultado_comparacao == 0){
+                return atual;
+            }
+                
+            atual = atual->prox;            
+            }
+        return NULL;
+        }
+    }
 
 	void inserir_simbolo(const char *lexema, const char *token) {
 		// Aloca memória para o novo símbolo
@@ -41,14 +66,18 @@
 		if (inicio_tabela == NULL) {
 			inicio_tabela = novo_simbolo;
 		} else {
-			struct Simbolo *atual = inicio_tabela;
-			while (atual->prox != NULL) {
-				atual = atual->prox;
-			}
-			atual->prox = novo_simbolo;
+            Simbolo *busca = buscarSimbolo(lexema);
+   
+            if(busca == NULL){
+
+			    struct Simbolo *atual = inicio_tabela;
+			    while (atual->prox != NULL) {
+				    atual = atual->prox;
+			    }
+			    atual->prox = novo_simbolo;
+            }
 		}
 	}
-
 
 	void exportar_tabela(const char *nome_arquivo) {
 		FILE *arquivo = fopen(nome_arquivo, "w");
@@ -258,7 +287,7 @@ fimenquanto {
     printf("IDENTIFICADOR\n");
 }
 
-(<|>|>=|<=|==|<>|\+)  {
+(<|>|>=|<=|==|<>)  {
     // Armazenar o operador relacional na tabela de símbolos
     tabela_lexema[num_simbolos].lexema = strdup(yytext);
     tabela_lexema[num_simbolos].token = "OP_RELACIONAL";
@@ -319,7 +348,7 @@ fimenquanto {
     //tabela_lexema[num_simbolos].lexema = strdup(yytext);
     //tabela_lexema[num_simbolos].token = "VAZIO";
     //num_simbolos++;
-    printf("VAZIO\n");
+    //printf("VAZIO\n");
 }
 
 
@@ -347,11 +376,28 @@ fimenquanto {
 %%
 
 int main() {
-    // Chame yylex() para iniciar a análise léxica
-    yylex();
 
-    // Após a conclusão da análise léxica, exporte a tabela de símbolos
-    //exportar_tabela("tabela_lexema.csv");
+
+  // Abrir o arquivo de entrada
+  arquivo_entrada = fopen("arquivo_entrada", "r");
+
+  // Verificar se o arquivo foi aberto com sucesso
+  if (arquivo_entrada == NULL) {
+    printf("Erro ao abrir o arquivo de entrada.\n");
+    exit(1);
+  }
+
+  // Redirecionar a entrada padrão para o arquivo
+  yyin = arquivo_entrada;
+
+  // Chamar yylex() para iniciar a análise léxica
+  yylex();
+  
+  // Fechar o arquivo de entrada
+  fclose(arquivo_entrada);
+
+  // Após a conclusão da análise léxica, exporte a tabela de símbolos
+  //exportar_tabela("tabela_lexema.csv");
 
     return 0;
 }
